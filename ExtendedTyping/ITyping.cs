@@ -6,6 +6,8 @@ namespace ExtendedTyping
 {
     public interface ITyping
     {
+        Type Type { get; }
+        dynamic V { get; }
         object O { get; }
     }
 }

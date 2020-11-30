@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 
 using ExtendedTyping;
+using ExtendedTyping.Conversion;
 
 
 namespace Debugging
@@ -83,7 +84,8 @@ namespace Debugging
             //long l = (long)il;
 
             ITight t = Tight<IComparable<int>, IEquatable<int>>.New(9);
-            BigLoose bl = new BigLoose(new Type[] { typeof(int), typeof(double) });
+            BigLoose bl = new BigLoose(new TypeArray<int, double>());
+            //BigLoose bl = new BigLoose(new Type[] { typeof(int), typeof(double) });
 
             bl.V = 8;
             Console.WriteLine(bl);
@@ -97,9 +99,8 @@ namespace Debugging
             Console.WriteLine(bl != 8);
             Console.WriteLine(bl.GetHashCode());
             Console.WriteLine(bl2.GetHashCode());
-            IEnumerable ie = new TypeArray<int, string, long, bool, ulong, long, uint, short, ushort, byte, sbyte, char>()
+            IEnumerable ie = new TypeArray<int, string, long, bool, ulong, long, int, int, int, int, int, int, int, uint, short, ushort, byte, sbyte, char>()
                 .Concat(new TypeArray<StringBuilder, Stopwatch, DateTime, Loose<int>, Loose<double>, int, string, bool, int, int, int, int, int>());
-
 
             foreach (Type type in ie)
             {
@@ -111,6 +112,26 @@ namespace Debugging
             foreach (Type type in new TypeArray<int>())
             {
                 Console.WriteLine(type);
+            }
+
+            bl.AddType(typeof(byte));
+            bl.AddType(typeof(int));
+            Console.WriteLine(bl.WhiteList.Select(t => t.ToString()).Aggregate((a, b) => $"{a}, {b}"));
+
+            ITypeArray tarr = new TypeArray<sbyte, short, int, long, byte, ushort, uint, ulong>();
+            Console.WriteLine();
+
+
+
+
+
+            int nine = 9;
+            int eight = 9;
+            int zero = 0;
+            bool Bool = (ByteBool)nine;
+            if ((IntBool)nine)
+            {
+
             }
 
         }
