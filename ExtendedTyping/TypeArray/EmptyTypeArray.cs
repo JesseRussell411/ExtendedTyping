@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ExtendedTyping
 {
-    public struct TypeArray : IEnumerable<Type>, ITypeArray
+    public struct TypeArray : ITypeArray
     {
         public IEnumerator<Type> GetEnumerator() => Enumerable.Empty<Type>().GetEnumerator();
 

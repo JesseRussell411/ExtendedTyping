@@ -4,6 +4,9 @@ using System.Text;
 
 namespace ExtendedTyping
 {
+    /// <summary>
+    /// A custom typing interface.
+    /// </summary>
     public interface ITyping
     {
         Type Type { get; }

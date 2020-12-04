@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ExtendedTyping
 {
-    public static class ExtendedTyping
+    public struct LiteralOverloading
     {
 
     }
