@@ -8,7 +8,9 @@ namespace ExtendedTyping
     public class BigLoose : ILoose
     {
         #region public Properties
-        public IReadOnlyCollection<Type> WhiteList => whiteList;
+        public ReadOnlySetWrapper<Type> WhiteListSet => whiteList;
+        public IEnumerable<Type> WhiteList => whiteList.ToITypeArray();
+
         /// <summary>
         /// The value stored in the current Loose type.
         /// </summary>
@@ -57,6 +59,7 @@ namespace ExtendedTyping
             result.value = value;
             return result;
         }
+
         /// <summary>
         /// Creates and returns a new BigLoose with a copy of the white list from the current BigLoose and a shallow copy of it's value.
         /// </summary>
@@ -71,20 +74,48 @@ namespace ExtendedTyping
         public override string ToString() => value.ToString();
         public override bool Equals(object obj) => value.Equals(obj);
         public override int GetHashCode() => value.GetHashCode();
+
         /// <summary>
         /// Checks if the given type is in the white list and would be allowed in Loose.V. If false is returned, Trying to set Loose.V to the given type would cause an exception to be thrown.
         /// </summary>
         /// <param name="t">The type to be checked.</param>
         /// <returns>True if the type was found in the white list and false otherwise.</returns>
-        public bool CheckType(Type t) => whiteList.Contains(t);
+        public bool CheckType(Type t)
+        {
+            foreach(Type type in t.GetSelfAndParents())
+            {
+                if (whiteList.Contains(type)) return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to set V to the value given.
+        /// </summary>
+        /// <param name="v">Value given.</param>
+        /// <returns>True if success; False otherwise.</returns>
+        public bool TrySetV(dynamic v)
+        {
+            if (CheckType(v.GetType()))
+            {
+                V = v;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Tries to add the given type to the white list. Note that types cannot be removed from the white list.
         /// </summary>
         /// <param name="t">The type to be added.</param>
         /// <returns>True if the type was successfully added; false otherwise.</returns>
         public bool AddType(Type t) => whiteList.Add(t);
+
         /// <summary>
-        /// Tries to remove the given type from the white list. If successful and the type of the value is equal to the given type t, the value will be reset to default to prevent an invalid type from being stored.
+        /// Tries to remove the given type from the white list. If successful and the value is no longer valid, the value will be reset to default to prevent an invalid type from being stored.
         /// </summary>
         /// <param name="t">The type to remove.</param>
         /// <returns>True if the type was found in the white list; false otherwise.</returns>
@@ -92,7 +123,7 @@ namespace ExtendedTyping
         {
             if (whiteList.Remove(t))
             {
-                if (value.GetType() == t) value = default;
+                if (CheckType(value.GetType())) value = default;
                 return true;
             }
             else
@@ -106,8 +137,10 @@ namespace ExtendedTyping
         #region Operators
         public static bool operator ==(BigLoose left, BigLoose right) => left.value.Equals(right.value);
         public static bool operator ==(BigLoose left, object right) => left.value.Equals(right);
+        public static bool operator ==(object left, BigLoose right) => left.Equals(right.value);
         public static bool operator !=(BigLoose left, BigLoose right) => !left.value.Equals(right.value);
         public static bool operator !=(BigLoose left, object right) => !left.value.Equals(right);
+        public static bool operator !=(object left, BigLoose right) => !left.Equals(right.value);
         #endregion
         #endregion
 

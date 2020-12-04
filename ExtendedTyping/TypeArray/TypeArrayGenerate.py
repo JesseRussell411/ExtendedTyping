@@ -72,15 +72,26 @@ for i in range(0, TYPE_PARAMETER_COUNT):
     #
 
     # Struct declaration:
-    output.write(INDENT + "public struct " + FULL_NAME + " : IEnumerable<Type>, ITypeArray\n" +
+    output.write(INDENT + "public struct " + FULL_NAME + " : ITypeArray\n" +
                  INDENT + "{\n")
     #
 
     # GetEnumerator:
     output.write(INDENT * 2 + "public IEnumerator<Type> GetEnumerator()\n"+
                  INDENT * 2 + "{\n")
+    first = True
     for j in range(0, i + 1):
-        output.write(INDENT * 3 + "yield return typeof(" + T(j) + ");\n")
+        if j % 3 == 0 and not first:
+            output.write("\n" + INDENT * 3)
+
+        if first:
+            output.write(INDENT * 3)
+
+        output.write("yield return typeof(" + T(j) + ");")
+        first = False
+
+    output.write("\n")
+
     output.write(INDENT * 2 + "}\n")
 
     output.write(INDENT * 2 + "IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();\n")
@@ -94,8 +105,18 @@ for i in range(0, TYPE_PARAMETER_COUNT):
                  INDENT * 4 + "switch (i)\n" +
                  INDENT * 4 + "{\n")
 
+    first = True
     for j in range(0, i + 1):
-        output.write(INDENT * 5 + "case " + str(j) + ": return typeof(" + T(j) + ");\n")
+        if j % 3 == 0 and not first:
+            output.write("\n" + INDENT * 5)
+
+        if first:
+            output.write(INDENT * 5)
+
+        output.write("case " + str(j) + ": return typeof(" + T(j) + ");")
+        
+        first = False
+    output.write("\n")
 
     output.write((INDENT * 5 + "default: throw new IndexOutOfRangeException();\n"+
                   INDENT * 4 + "}\n"+
@@ -107,7 +128,7 @@ for i in range(0, TYPE_PARAMETER_COUNT):
     output.write(INDENT * 2 + "public int Length => " + str(i + 1) + ";\n")
 
     # Casts:
-    output.write(INDENT * 2 + "public static implicit operator Type[](" + FULL_NAME + "ta) => new Type[] {")
+    output.write(INDENT * 2 + "public static implicit operator Type[](" + FULL_NAME + " ta) => new Type[] {")
     first = True;
     for j in range(0, i + 1):
         if not first:
